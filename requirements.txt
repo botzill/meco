@@ -4,3 +4,4 @@ peewee==2.10.2
 requests==2.18.4
 nltk==3.2.5
 inflect==0.2.5
+Flask-Cache==0.13.1

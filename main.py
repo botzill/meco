@@ -19,14 +19,18 @@ import time
 
 import nltk
 from flask import Flask, render_template, request
+from flask_cache import Cache
 from nltk.corpus import wordnet as wn
+import random
 
 import config
 import db
 from db import EngWords
 from utils import inf_engine
 
+cache = Cache(config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': config.CACHE_TIMEOUT})
 app = Flask(__name__)
+cache.init_app(app)
 
 NOUNS = set()
 try:
@@ -79,9 +83,10 @@ def convert_number_to_word(number, filter_nouns=False):
         EngWords.frequency.desc()).distinct()
 
     if filter_nouns:
-        words_sel = words_sel.select().where(EngWords.word.in_(nouns))
+        words_sel = words_sel.select().where(EngWords.word.in_(nouns)).distinct()
 
-    all_words = [w.word for w in words_sel]
+    # TODO: geo here we should get distinct items from db already!
+    all_words = list(set([w.word for w in words_sel]))
     logging.info("Done.")
 
     return all_words
@@ -94,11 +99,19 @@ def init():
 
 def global_vars():
     return {
-        'app_id': os.environ.get('CURRENT_VERSION_ID', 1)
+        'app_id': os.environ.get('CURRENT_VERSION_ID', 'v10101')
     }
 
 
+def make_cache_key(*args, **kwargs):
+    number = request.form['number']
+    filter_nouns = request.form.get('filter_nouns', 'off')
+
+    return '%s_%s' % (number, filter_nouns)
+
+
 @app.route('/')
+@cache.cached(key_prefix='index')
 def index():
     init()
     return render_template('index.html',
@@ -106,8 +119,10 @@ def index():
 
 
 @app.route('/submitted', methods=['POST'])
+@cache.cached(key_prefix=make_cache_key)
 def submitted_form():
     number = request.form['number']
+
     filter_nouns = request.form.get('filter_nouns', 'off')
 
     filter_nouns = True if filter_nouns in ('on',) else False

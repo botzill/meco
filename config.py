@@ -1,4 +1,4 @@
-DISABLE_DICT_DOWNLOAD = True
+DISABLE_DICT_DOWNLOAD = False
 INIT_DB = False
 
 ALPHANUM_CODE = {
@@ -21,3 +21,5 @@ SOFT_SOUND_REGEXP = '[eiy]+'
 DICT_WORDS_JSON_URL = 'https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json'
 DICT_WORDS_FREQ_URL = 'http://norvig.com/ngrams/count_1w.txt'
 
+
+CACHE_TIMEOUT = 60*5

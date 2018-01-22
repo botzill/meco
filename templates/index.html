@@ -1,7 +1,8 @@
 <html>
 <head>
-    <title>Submit a form</title>
+    <title>The Ancient Alphanumeric Code Of Memory</title>
     <link rel="stylesheet" type="text/css" href="/static/main.css?v={{ app_id }}"/>
+    <link rel="icon" href="/static/owl_logo.png">
 </head>
 
 <body>
@@ -12,22 +13,31 @@
     <div id="main">
         <form method="post" action="{{ url_for('submitted_form') }}">
             <label for="number">Number:</label>
-            <input type="number" name="number" value="{{ number }}" placeholder="Input number">
-            <input type="submit" id="submit" onclick="disable_submit()">
+            <input type="number" min="0" max="9999" step="1" name="number" value="{{ number }}"
+                   placeholder="Input number">
+            <input type="submit" id="submit" onclick="on_submit()">
             <br>
             <label for="filter_nouns">Filter only nouns:</label>
             <input type="checkbox" name="filter_nouns" {{ checked }}>
         </form>
     </div>
-    {% if elapsed_time %}
-        <div>Seconds: {{ elapsed_time }}</div>
-    {% endif %}
-    <div id="results">
+    <div class="spinner" id="spinner" style="display: none">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+    </div>
+    <div id="results" class="list-type1">
+        {% if words %}
         <ol>
             {% for word in words %}
-            <li><span>{{ word }}</span></li>
+            <li><a href="https://www.google.com/search?q={{ word }}" target="_blank">{{ word }}</a></li>
             {% endfor %}
         </ol>
+        {% else %}
+        {% if words is defined %}
+        <span>No words found</span>
+        {% endif %}
+        {% endif %}
+
     </div>
 </div>
 <script src="/static/main.js?v={{ app_id }}"></script>

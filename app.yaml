@@ -1,6 +1,5 @@
-#application: alphanumcode
 runtime: python
 env: flex
-entrypoint: gunicorn -b :$PORT main:app
+entrypoint: gunicorn --timeout 75 --graceful-timeout 75 -b :$PORT main:app
 runtime_config:
   python_version: 3
