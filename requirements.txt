@@ -1,0 +1,6 @@
+Flask==0.12.2
+gunicorn==19.7.1
+peewee==2.10.2
+requests==2.18.4
+nltk==3.2.5
+inflect==0.2.5

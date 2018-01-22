@@ -1,0 +1,35 @@
+<html>
+<head>
+    <title>Submit a form</title>
+    <link rel="stylesheet" type="text/css" href="/static/main.css?v={{ app_id }}"/>
+</head>
+
+<body>
+<div id="container">
+    <div class="pagetitle">
+        <h1>Submit a number to convert it into words</h1>
+    </div>
+    <div id="main">
+        <form method="post" action="{{ url_for('submitted_form') }}">
+            <label for="number">Number:</label>
+            <input type="number" name="number" value="{{ number }}" placeholder="Input number">
+            <input type="submit" id="submit" onclick="disable_submit()">
+            <br>
+            <label for="filter_nouns">Filter only nouns:</label>
+            <input type="checkbox" name="filter_nouns" {{ checked }}>
+        </form>
+    </div>
+    {% if elapsed_time %}
+        <div>Seconds: {{ elapsed_time }}</div>
+    {% endif %}
+    <div id="results">
+        <ol>
+            {% for word in words %}
+            <li><span>{{ word }}</span></li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+<script src="/static/main.js?v={{ app_id }}"></script>
+</body>
+</html>
