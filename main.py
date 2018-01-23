@@ -16,12 +16,12 @@ import itertools
 import logging
 import os
 import time
+from collections import namedtuple
 
 import nltk
 from flask import Flask, render_template, request
 from flask_cache import Cache
 from nltk.corpus import wordnet as wn
-import random
 
 import config
 import db
@@ -103,11 +103,17 @@ def global_vars():
     }
 
 
-def make_cache_key(*args, **kwargs):
-    number = request.form['number']
-    filter_nouns = request.form.get('filter_nouns', 'off')
+def get_request_params():
+    Params = namedtuple('Params', 'number, filter_nouns')
 
-    return '%s_%s' % (number, filter_nouns)
+    return Params(
+        request.args.get('number', '0'),
+        request.args.get('filter_nouns', 'off'))
+
+
+def make_cache_key(*args, **kwargs):
+    params = get_request_params()
+    return '{number}_{filter_nouns}'.format(**params._asdict())
 
 
 @app.route('/')
@@ -118,12 +124,13 @@ def index():
                            **global_vars())
 
 
-@app.route('/submitted', methods=['POST'])
+@app.route('/to-word', methods=['GET'])
 @cache.cached(key_prefix=make_cache_key)
 def submitted_form():
-    number = request.form['number']
+    params = get_request_params()
 
-    filter_nouns = request.form.get('filter_nouns', 'off')
+    number = params.number
+    filter_nouns = params.filter_nouns
 
     filter_nouns = True if filter_nouns in ('on',) else False
 
@@ -135,6 +142,10 @@ def submitted_form():
     t_start = time.process_time()
     words = convert_number_to_word(number, filter_nouns=filter_nouns)
     elapsed_time = time.process_time() - t_start
+    extra_title = ''
+
+    if words:
+        extra_title = '| Number %s can be encoded in %s' % (number, ', '.join(words[0:4]))
 
     return render_template(
         'index.html',
@@ -142,6 +153,7 @@ def submitted_form():
         number=number,
         checked=checked,
         elapsed_time=elapsed_time,
+        extra_title=extra_title,
         **global_vars()
     )
 

@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>The Ancient Alphanumeric Code Of Memory</title>
+    <title>The Ancient Alphanumeric Code Of Memory {{ extra_title }}</title>
     <link rel="stylesheet" type="text/css" href="/static/main.css?v={{ app_id }}"/>
     <link rel="icon" href="/static/owl_logo.png">
 </head>
@@ -11,7 +11,7 @@
         <h1>Submit a number to convert it into words</h1>
     </div>
     <div id="main">
-        <form method="post" action="{{ url_for('submitted_form') }}">
+        <form method="GET" action="{{ url_for('submitted_form') }}">
             <label for="number">Number:</label>
             <input type="number" min="0" max="9999" step="1" name="number" value="{{ number }}"
                    placeholder="Input number">
